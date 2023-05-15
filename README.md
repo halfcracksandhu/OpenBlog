@@ -1,4 +1,0 @@
-# Open Blog
-
-## Description
-
