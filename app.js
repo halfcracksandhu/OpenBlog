@@ -81,19 +81,16 @@ passport.deserializeUser(async function (id, done) {
 passport.use(new GoogleStrategy({
   clientID:     process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "http://localhost:3000/auth/google/secrets"
+  callbackURL: "http://localhost:3000/auth/google/OpenBlog"
 },
 function(accessToken, refreshToken, profile, done) {
-  console.log(accessToken + refreshToken + profile + done);
   User.findOrCreate({ googleId: profile.id }, function (err, user) {
     return done(err, user);
   });
 }
 ));
 
-app.get('/',function(req,res){
-  res.render('index');
-})
+
 
 // loading error tip 'don't use empty function,run the authentication directly" 
 
@@ -103,7 +100,7 @@ app.get("/auth/google",
 
 app.get( "/auth/google/OpenBlog",
     passport.authenticate( "google", 
-    { successRedirect: "/Home",
+    { successRedirect: "/home",
       failureRedirect: "/login"})
 );
 
@@ -112,8 +109,45 @@ app.get("/auth/google/OpenBlog",
   {failureRedirect: "/login" }),
   (req, res) => res.redirect("/home"));
 
+
+// Root Route
+
+app.get('/',function(req,res){
+ 
+  if (req.isAuthenticated()){
+
+    console.log('authenticated');
+    res.redirect('home');
+  }
+  else{
+    res.render('index',{loggedIn: 'nope'});
+    console.log('Root Get Route: Not Authenticated')
+  }
+})
+
+// Home Route
+
+app.get('/home',function(req,res){
+  if (req.isAuthenticated()){
+    console.log('Home Get Route: authenticated');
+    res.render('home',{loggedIn: 'yes'});}
+  else{
+    console.log('Home Get Route: Not authenticated');
+    res.redirect("/");}
+})
+
+//Login Routes
+
 app.get('/login',function(req,res){
-  res.render('login')
+
+  if (req.isAuthenticated()){
+    console.log('authenticated');
+    res.redirect('home',{loggedIn: "nope"});
+  }
+  else{
+    res.render('login',{loggedIn:'aboutTo'});
+    console.log('Login Get Route: Not Authenticated')
+  }
 })
 
 app.post('/login',function(req,res){
@@ -125,11 +159,12 @@ app.post('/login',function(req,res){
   req.login(user, function(err){
     if(err){
      console.log(err);
+     res.render('login');
     }
     else{
      passport.authenticate("local")(req, res, function(){
      res.redirect('/home');
-
+     console.log(user)
      });
 
     }
@@ -137,28 +172,26 @@ app.post('/login',function(req,res){
 
 })
 
-app.get('/register',function(req,res){
-  res.render('register');
-})
-
-
-app.get('/compose',function(req,res){
-  if (req.isAuthenticated()){
-    console.log('authenticated');
-    res.render('compose');
-  }
-  else{
-    res.redirect('/login');
-    console.log('Not Authenticated')
-  }
-  res.render('compose')
-})
+//LogOut Routes
 
 app.get('/logout', function(req,res){
-req.logout(done=>{
-  console.log('done');
-});
-res.redirect('/');
+  req.logout(done=>{
+    console.log('done');
+  });
+  res.redirect('/',{loggedIn:'nope'});
+  })
+  
+//Register Routes
+
+app.get('/register',function(req,res){
+  if (req.isAuthenticated()){
+    console.log('authenticated');
+    res.render('home',{loggedIn:'yes'});
+  }
+  else{
+    res.render('register',{loggedIn:'aboutto'});
+    console.log(' register get route: Not Authenticated')
+  }
 })
 
 app.post('/register',function(req,res){
@@ -170,9 +203,24 @@ app.post('/register',function(req,res){
   }
   else{
     passport.authenticate('local')(req,res, function(){
-      res.redirect("/secrets");
+      res.redirect("/home");
+      console.log('success')
     })
   }
 })
 
+})
+
+//Compose Routes
+
+app.get('/compose',function(req,res){
+  if (req.isAuthenticated()){
+    console.log('authenticated');
+    res.render('compose',{loggedIn:'yes'});
+  }
+  else{
+    res.redirect('/login');
+    console.log('Compose Get Route: Not Authenticated')
+  }
+  
 })

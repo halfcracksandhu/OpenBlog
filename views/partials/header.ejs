@@ -13,14 +13,20 @@
         <a href="/"><img class="logo" src="images/logo.png" alt=""></a>
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="#" class="nav-link px-2 text-white">Home</a></li>
-          <li><a href="#" class="nav-link px-2 text-white">Services</a></li>
-          <li><a href="#" class="nav-link px-2 text-white">Plans & Pricing</a></li>
-          <li><a href="#" class="nav-link px-2 text-white">About Us</a></li>
+          <li><a href="home" class="nav-link px-2 text-white">Home</a></li>
+          <li><a href="" class="nav-link px-2 text-white">Services</a></li>
+          <li><a href="pricing" class="nav-link px-2 text-white">Plans & Pricing</a></li>
+          <li><a href="about" class="nav-link px-2 text-white">About Us</a></li>
         </ul>
-        <div class="text-end">
-          <button type="button" class="btn btn-outline-light me-2">Login</button>
-        </div>
+        <%  if(loggedIn == 'yes'){  %>
+             <div class="text-end">
+              <a class="btn btn-outline-light me-2" href="logout">LogOut</a>
+             </div>
+        <%  }else if(loggedIn == 'nope'){          %>
+             <div class="text-end">
+             <a href="login" class="btn btn-outline-light me-2">Login</a>
+             </div>
+        <%  }              %>
       </div>
     </div>
   </header>

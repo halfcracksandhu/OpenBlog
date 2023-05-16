@@ -8,16 +8,16 @@
           class="img-fluid" alt="Phone image">
       </div>
       <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1 main-form ">
-        <form>
+        <form action="/login" method="post">
           <!-- Email input -->
           <div class="form-outline mb-4">
-            <input type="email" id="form1Example13" class="form-control form-control-lg" />
+            <input onkeydown="return event.key != 'Enter';" name="username" type="email" id="form1Example13" class="form-control form-control-lg" onclick="console.warn();" />
             <label class="form-label" for="form1Example13">Email address</label>
           </div>
 
           <!-- Password input -->
           <div class="form-outline mb-4">
-            <input type="password" id="form1Example23" class="form-control form-control-lg" />
+            <input name="password" type="password" id="form1Example23" class="form-control form-control-lg" />
             <label class="form-label" for="form1Example23">Password</label>
           </div>
 
@@ -27,7 +27,7 @@
               <input class="form-check-input" type="checkbox" value="" id="form1Example3" checked />
               <label class="form-check-label" for="form1Example3"> Remember me </label>
             </div>
-            <a href="#!">Not A Member Yet?</a>
+            <a href="register">Not A Member Yet?</a>
           </div>
 
           <!-- Submit button -->
