@@ -7,10 +7,10 @@ const app = express();
 
 // Session and authentication
 
-// const session = require('express-session');
-// const passport = require('passport')
-// const passportLocalMongoose = require('passport-local-mongoose');
-// const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');
+const passport = require('passport')
+const passportLocalMongoose = require('passport-local-mongoose');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 // mongoose requiements
 
@@ -28,16 +28,16 @@ app.use(express.static("public"));
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-//sessin manager 
+//session manager 
 
-// app.use(session({
-//   secret: 'our little secret.',
-//   resave: false,
-//   saveUninitialized: false
-// }))
+app.use(session({
+  secret: 'process.env.SESSION_SECRET',
+  resave: false,
+  saveUninitialized: false
+}))
 
-// app.use(passport.initialize());
-// app.use(passport.session());
+app.use(passport.initialize());
+app.use(passport.session());
 
 //Port Setup
 
@@ -47,48 +47,49 @@ app.listen(PORT,function(){console.log('Started Server')})
 
 mongoose.connect(process.env.MongoDB_Key)
 
-// const userSchema = new mongoose.Schema
-// ({user: String,
-//   password: String,
-//   googleId: String,
-//   secret: String})
+const userSchema = new mongoose.Schema
+({user: String,
+  password: String,
+  googleId: String,
+  google_dp: String,
+  secret: String})
 
-// userSchema.plugin(passportLocalMongoose); 
+userSchema.plugin(passportLocalMongoose); 
 
-// userSchema.plugin(findOrCreate);
+userSchema.plugin(findOrCreate);
 
-// const User = mongoose.model('User',userSchema);
+const User = mongoose.model('User',userSchema);
 
-// passport.use(User.createStrategy());
-
-
-// passport.serializeUser(function (user, done) {
-//   done(null, user.id);
-// });
-// passport.deserializeUser(async function (id, done) {
-//   let err, user;
-//   try {
-//       user = await User.findById(id).exec();
-//   }
-//   catch (e) {
-//       err = e;
-//   }
-//   done(err, user);
-// });
+passport.use(User.createStrategy());
 
 
-// passport.use(new GoogleStrategy({
-//   clientID:     process.env.CLIENT_ID,
-//   clientSecret: process.env.CLIENT_SECRET,
-//   callbackURL: "http://localhost:3000/auth/google/secrets"
-// },
-// function(accessToken, refreshToken, profile, done) {
-//   console.log(accessToken + refreshToken + profile + done);
-//   User.findOrCreate({ googleId: profile.id }, function (err, user) {
-//     return done(err, user);
-//   });
-// }
-// ));
+passport.serializeUser(function (user, done) {
+  done(null, user.id);
+});
+passport.deserializeUser(async function (id, done) {
+  let err, user;
+  try {
+      user = await User.findById(id).exec();
+  }
+  catch (e) {
+      err = e;
+  }
+  done(err, user);
+});
+
+
+passport.use(new GoogleStrategy({
+  clientID:     process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  callbackURL: "http://localhost:3000/auth/google/secrets"
+},
+function(accessToken, refreshToken, profile, done) {
+  console.log(accessToken + refreshToken + profile + done);
+  User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    return done(err, user);
+  });
+}
+));
 
 app.get('/',function(req,res){
   res.render('index');
@@ -96,82 +97,82 @@ app.get('/',function(req,res){
 
 // loading error tip 'don't use empty function,run the authentication directly" 
 
-// app.get("/auth/google",
-//   passport.authenticate("google", { scope:["profile"] } )
-// )
+app.get("/auth/google",
+  passport.authenticate("google", { scope:["profile"] } )
+)
 
-// app.get( "/auth/google/secrets",
-//     passport.authenticate( "google", 
-//     { successRedirect: "/secrets",
-//       failureRedirect: "/login"})
-// );
+app.get( "/auth/google/OpenBlog",
+    passport.authenticate( "google", 
+    { successRedirect: "/Home",
+      failureRedirect: "/login"})
+);
 
-// app.get("/auth/google/secrets",
-//   passport.authenticate("google", 
-//   {failureRedirect: "/login" }),
-//   (req, res) => res.redirect("/secrets"));
-
-app.get('/signIn',function(req,res){
-  res.render('signIn')
-})
-
-app.post('/signIn',function(req,res){
-
-  // const user = new User({
-  // username: req.body.username,
-  // password: req.body.password})
-
-  // req.login(user, function(err){
-  //   if(err){
-  //    console.log(err);
-  //   }
-  //   else{
-  //    passport.authenticate("local")(req, res, function(){
-  //    res.redirect('/secrets');
-
-  //    });
-
-  //   }
-  // })
-
-})
+app.get("/auth/google/OpenBlog",
+  passport.authenticate("google", 
+  {failureRedirect: "/login" }),
+  (req, res) => res.redirect("/home"));
 
 app.get('/login',function(req,res){
-  res.render('login');
+  res.render('login')
+})
+
+app.post('/login',function(req,res){
+
+  const user = new User({
+  username: req.body.username,
+  password: req.body.password})
+
+  req.login(user, function(err){
+    if(err){
+     console.log(err);
+    }
+    else{
+     passport.authenticate("local")(req, res, function(){
+     res.redirect('/home');
+
+     });
+
+    }
+  })
+
+})
+
+app.get('/register',function(req,res){
+  res.render('register');
 })
 
 
 app.get('/compose',function(req,res){
-  // if (req.isAuthenticated()){
-  //   console.log('authenticated');
-  //   res.render('secrets');
-  // }
-  // else{
-  //   res.redirect('/login');
-  //   console.log('Not Authenticated')
-  // }
+  if (req.isAuthenticated()){
+    console.log('authenticated');
+    res.render('compose');
+  }
+  else{
+    res.redirect('/login');
+    console.log('Not Authenticated')
+  }
   res.render('compose')
 })
 
-// app.get('/logout', function(req,res){
-// req.logout(done=>{
-//   console.log('done');
-// });
-// res.redirect('/');
-// })
+app.get('/logout', function(req,res){
+req.logout(done=>{
+  console.log('done');
+});
+res.redirect('/');
+})
 
-app.post('/signup',function(req,res){
+app.post('/register',function(req,res){
 
-//   User.register( {username: req.body.username}, req.body.password, function(err, user){
-//   if(err){
-//     console.log(err);
-//     res.redirect('/register');
-//   }
-//   else{
-//     passport.authenticate('local')(req,res, function(){
-//       res.redirect("/secrets");
-//     })
-//   }
-// })
+  User.register( {username: req.body.username}, req.body.password, function(err, user){
+  if(err){
+    console.log(err);
+    res.redirect('/register');
+  }
+  else{
+    passport.authenticate('local')(req,res, function(){
+      res.redirect("/secrets");
+    })
+  }
+})
 
 })
