@@ -210,7 +210,11 @@ app.get('/register',function(req,res){
 
 app.post('/register',function(req,res){
 
-  User.register( {username: req.body.username, name:req.body.firstName + " " + req.body.lastName, first_name: req.body.firstName, google_dp:'/images/test.svg'}, req.body.password, function(err, user){
+  const f_name = _.startCase(req.body.firstName);
+  const l_name = _.startCase(req.body.lastName);
+  const full_name = _.startCase(f_name + " " + l_name);
+
+  User.register( {username: req.body.username, name: full_name, first_name: f_name, google_dp:'/images/test.svg'}, req.body.password, function(err, user){
   if(err){
     console.log(err);
     res.redirect('/register');
@@ -241,7 +245,8 @@ app.get('/compose',function(req,res){
 
 app.post('/compose',function(req,res){
   const newPost = {
-    title: req.body.title,
+    key: _.kebabCase(req.body.title),
+    title: _.trim(req.body.title),
     content: req.body.content
   }
 
@@ -291,10 +296,11 @@ app.get("/posts/:user/:blog",function(req,res){
   //authentication
 
   if (req.isAuthenticated()){
+   
     console.log('Article Get Route authenticated');
-  
+   
     const user = req.params.user;
-    const post = _.toUpper(req.params.blog);
+    const post = req.params.blog;
     console.log('Requested Path: ' + user + "/" + post);
     
       //finding user and post
@@ -305,7 +311,7 @@ app.get("/posts/:user/:blog",function(req,res){
       if(foundUser){
        for(i=0; i<foundUser.blog.length; i++)
        {  
-        const blogTitle = _.toUpper(foundUser.blog[i].title);
+        const blogTitle = foundUser.blog[i].key;
          if(blogTitle === post)
          {
           console.log('Post Found: ' + blogTitle);
@@ -327,12 +333,12 @@ app.get("/posts/:user/:blog",function(req,res){
             dp: req.user.google_dp}); 
           }
          else{
-          console.log("Didn't match")
+          console.log("Didn't match" + "\n"+ blogTitle + "\n" + post);
          }
        }
       }
       else{
-      console.log('Didn\'t Match');
+      console.log('User Not Found');
       }
     })
     .catch((err=>{console.log(err); res.redirect('home')}))
@@ -349,13 +355,13 @@ app.get("/posts/:user/:blog",function(req,res){
 app.get("/delete/:user/:post",function(req,res){
  console.log(req.params.user + '/' + req.params.post);
  const user_id = req.params.user;
- const post_title = req.params.post;
+ const post_key = req.params.post;
 
   User.findOneAndUpdate
-     ({_id:user_id},{$pull:{blog:{title:post_title}}})
+     ({_id:user_id},{$pull:{blog:{key:post_key}}})
      .then(
-       (doc)=>{
-         console.log("Deleted Items" + blog.title);
+       (blog)=>{
+         console.log("Deleted Items" + blog.key);
          res.redirect("/home");
        }
      )

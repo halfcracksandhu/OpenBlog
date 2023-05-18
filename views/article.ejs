@@ -4,7 +4,7 @@
   
   <div class="rounded blog-container border">
        <%if(owner){%>
-       <a href="/delete/<%=user._id%>/<%=blog.title%>" class="btn btn-danger deletePost-btn  p-1" ><img class="deletePost-icon me-1 p-0" src="/images/bin.png"> Delete Post</a>
+       <a href="/delete/<%=user._id%>/<%=blog.key%>" class="btn btn-danger deletePost-btn  p-1" ><img class="deletePost-icon me-1 p-0" src="/images/bin.png"> Delete Post</a>
        <%}%>
        <div class="rounded blog-body-container border">
         <h2><%= blog.title %></h2>
