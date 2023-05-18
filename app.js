@@ -5,6 +5,10 @@ require('dotenv').config();
 const express = require("express");
 const app = express();
 
+//lodash
+
+const _ = require("lodash");
+
 // Session and authentication
 
 const session = require('express-session');
@@ -51,8 +55,10 @@ const userSchema = new mongoose.Schema
 ({user: String,
   password: String,
   googleId: String,
+  name:String,
+  first_name:String,
   google_dp: String,
-  secret: String})
+  blog: []})
 
 userSchema.plugin(passportLocalMongoose); 
 
@@ -84,8 +90,9 @@ passport.use(new GoogleStrategy({
   callbackURL: "http://localhost:3000/auth/google/OpenBlog"
 },
 function(accessToken, refreshToken, profile, done) {
-  User.findOrCreate({ googleId: profile.id }, function (err, user) {
+  User.findOrCreate({ googleId: profile.id, name: profile.displayName, first_name: profile.name.givenName ,google_dp: profile.photos[0].value }, function (err, user) {
     return done(err, user);
+    
   });
 }
 ));
@@ -98,16 +105,16 @@ app.get("/auth/google",
   passport.authenticate("google", { scope:["profile"] } )
 )
 
-app.get( "/auth/google/OpenBlog",
-    passport.authenticate( "google", 
-    { successRedirect: "/home",
-      failureRedirect: "/login"})
-);
+// app.get( "/auth/google/OpenBlog",
+//     passport.authenticate( "google", 
+//     { successRedirect: "/home",
+//       failureRedirect: "/login"})
+// );
 
 app.get("/auth/google/OpenBlog",
   passport.authenticate("google", 
   {failureRedirect: "/login" }),
-  (req, res) => res.redirect("/home"));
+  (req, res) => res.redirect("/"));
 
 
 // Root Route
@@ -129,8 +136,14 @@ app.get('/',function(req,res){
 
 app.get('/home',function(req,res){
   if (req.isAuthenticated()){
-    console.log('Home Get Route: authenticated');
-    res.render('home',{loggedIn: 'yes'});}
+    console.log('Home Get Route: authenticated  ');
+    
+    User.find({'blog':{$ne:[]} })
+    .then((result)=>{
+     res.render('home',{blogs:result, loggedIn: 'yes',firstName: req.user.first_name, dp: req.user.google_dp}); 
+    })
+    .catch((err)=>{console.log(err)});
+  }
   else{
     console.log('Home Get Route: Not authenticated');
     res.redirect("/");}
@@ -142,11 +155,11 @@ app.get('/login',function(req,res){
 
   if (req.isAuthenticated()){
     console.log('authenticated');
-    res.redirect('home',{loggedIn: "nope"});
+    res.redirect('home');
   }
   else{
     res.render('login',{loggedIn:'aboutTo'});
-    console.log('Login Get Route: Not Authenticated')
+    console.log('Login Get Route: Not Authenticated');
   }
 })
 
@@ -158,14 +171,12 @@ app.post('/login',function(req,res){
 
   req.login(user, function(err){
     if(err){
-     console.log(err);
-     res.render('login');
+     console.log(err + "something's wrong");
     }
     else{
-     passport.authenticate("local")(req, res, function(){
+     passport.authenticate("local", { failureRedirect: '/login',failureMessage:true})(req, res, function(){
      res.redirect('/home');
-     console.log(user)
-     });
+     })
 
     }
   })
@@ -178,7 +189,7 @@ app.get('/logout', function(req,res){
   req.logout(done=>{
     console.log('done');
   });
-  res.redirect('/',{loggedIn:'nope'});
+  res.redirect("/");
   })
   
 //Register Routes
@@ -186,7 +197,7 @@ app.get('/logout', function(req,res){
 app.get('/register',function(req,res){
   if (req.isAuthenticated()){
     console.log('authenticated');
-    res.render('home',{loggedIn:'yes'});
+    res.redirect('home');
   }
   else{
     res.render('register',{loggedIn:'aboutto'});
@@ -196,7 +207,7 @@ app.get('/register',function(req,res){
 
 app.post('/register',function(req,res){
 
-  User.register( {username: req.body.username}, req.body.password, function(err, user){
+  User.register( {username: req.body.username, name:req.body.firstName + " " + req.body.lastName, first_name: req.body.firstName, google_dp:'images/test.svg'}, req.body.password, function(err, user){
   if(err){
     console.log(err);
     res.redirect('/register');
@@ -216,11 +227,91 @@ app.post('/register',function(req,res){
 app.get('/compose',function(req,res){
   if (req.isAuthenticated()){
     console.log('authenticated');
-    res.render('compose',{loggedIn:'yes'});
+    res.render('compose',{loggedIn:'yes',firstName: req.user.first_name, dp: req.user.google_dp});
   }
   else{
     res.redirect('/login');
     console.log('Compose Get Route: Not Authenticated')
   }
   
+})
+
+app.post('/compose',function(req,res){
+  const newPost = {
+    title: req.body.title,
+    content: req.body.content
+  }
+
+  User.findById(req.user._id)
+  .then((result)=>{
+    result.blog.push(newPost);
+    result.save();
+  })
+  .catch((err)=>{console.log(err)})
+    
+res.redirect('/home');
+})
+
+
+//about Us Route
+
+app.get('/about',function(req,res){
+  if (req.isAuthenticated()){
+    console.log('authenticated');
+  res.render('about',{loggedIn:'yes',firstName: req.user.first_name, dp: req.user.google_dp});
+  }
+  else{
+  res.render('about',{loggedIn:'nope'});
+    console.log('About Us Get Route: Not Authenticated')
+  }
+})
+
+
+//Pricing Route
+
+app.get('/pricing',function(req,res){
+  if (req.isAuthenticated()){
+    console.log('authenticated');
+    res.render('pricing',{loggedIn:'yes',firstName: req.user.first_name, dp: req.user.google_dp});
+  }
+  else{
+    console.log('Pricing Get Route: Not Authenticated')
+    res.render('pricing',{loggedIn:'nope'});
+  }
+  
+})
+
+//Solo View Route
+
+app.get('/posts/:param/:param2',function(req,res){
+  
+  
+  //finding user and post
+  
+  const user = req.params.param;
+  const post = _.toUpper(req.params.param2);
+  console.log(user + "/" + post);
+if(post != 'INDEX.JS' && post != 'STYLE.CSS'){
+  User.findOne  ({name: user})
+    .then((foundUser)=>{
+      console.log('User found : '+ foundUser.name +' Looking for Posts...')
+      if(foundUser){
+       for(i=0; i<foundUser.blog.length; i++)
+       {  
+        const blogTitle = _.toUpper(foundUser.blog[i].title);
+         if(blogTitle === post)
+         {
+          console.log('Post Found: ' + blogTitle);
+          res.render('article',{loggedIn:'nope'});
+         }
+         else{
+          console.log(blogTitle + " " + post)
+         }
+       }
+      }
+      console.log('not found')
+    })
+    .catch((err=>{console.log(err); res.redirect('home')}))
+}
+
 })

@@ -21,13 +21,13 @@
                 <div class="row">
                   <div class="col-md-6 mb-4">
                     <div class="form-outline">
-                      <input onkeydown="return event.key != 'Enter';" type="text" id="form3Example1" class="form-control" />
+                      <input name="firstName" onkeydown="return event.key != 'Enter';" type="text" id="form3Example1" class="form-control" />
                       <label class="form-label" for="form3Example1">First name</label>
                     </div>
                   </div>
                   <div class="col-md-6 mb-4">
                     <div class="form-outline">
-                      <input onkeydown="return event.key != 'Enter';"  type="text" id="form3Example2" class="form-control" />
+                      <input name="lastName" onkeydown="return event.key != 'Enter';"  type="text" id="form3Example2" class="form-control" />
                       <label class="form-label" for="form3Example2">Last name</label>
                     </div>
                   </div>
@@ -63,12 +63,12 @@
                 <!-- Register buttons -->
                 <div class="text-center">
                   <p>or sign up with:</p>
-                  <div class="google-btn btn btn-outline-dark ">
+                  <a href="/auth/google" class="google-btn btn btn-outline-dark ">
                     <div class="google-icon-wrapper">
                       <img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
                     </div>
                     <p class="btn-text">Sign up with google</p>
-                  </div>
+                  </a>
                 </div>
               </form>
             </div>

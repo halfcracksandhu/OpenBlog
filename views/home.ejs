@@ -10,13 +10,13 @@
   
   <%blogs.forEach(function(user){%>
   
-    <% for(i=0;i<user.blog.length;i++){ console.log(user.blog[i]);%>
+    <% for(i=0;i<user.blog.length;i++){%>
 
        <div class="rounded post-container border">
         <h2><%= user.blog[i].title %></h2>
         <p class="post-author"><%= user.name %></p>
         <p class="post-content"><%= user.blog[i].content.substring(0, 200) + " ..." %></p>
-        <a href="/<%=user.name%>/<%= user.blog[i].title%>" class="btn compose-btn">Read More ></a>
+        <a href="posts/<%=user.name%>/<%= user.blog[i].title%>" class="btn compose-btn">Read More ></a>
       </div>
 
     <%}%>
@@ -31,10 +31,9 @@
   <hr class="hr border-dark-subtle">
   <%blogs.forEach(function(user){%>
 
-    <% for(i=0;i<user.blog.length;i++){ console.log(user.blog[i]);%>
+    <% for(i=0;i<user.blog.length;i++){%>
 
-      
-       <p class="mb-2"><%= user.blog[i].title %></p>
+      <a href="posts/<%=user.name%>/<%= user.blog[i].title%>" class=" text-dark recent-posts-text"><ul class="mb-3"><li><%= user.blog[i].title %></li></ul></a>
    <%}%>
   <%})%>
 
@@ -43,15 +42,6 @@
 </div>
 
 <%- include('partials/footer') %>
-
-
-
-
-
-
-
-
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero, veniam minus. Cupiditate, veritatis est eos pariatur necessitatibus ipsum dicta asperiores esse culpa. Non at iure alias blanditiis numquam velit provident dolores, optio officia nihil neque, dicta iste reprehenderit maxime animi nesciunt natus id error corrupti laboriosam. Placeat explicabo quos esse blanditiis porro cupiditate dicta animi laboriosam sequi, voluptas numquam magnam obcaecati odio optio enim quam minus, non quisquam fugit neque harum! Neque totam magnam suscipit, eveniet assumenda labore fugiat aliquam ex adipisci dicta quasi quod praesentium asperiores aspernatur quos! Iure eaque sunt aspernatur enim consequuntur. Iure modi quidem laborum eius tenetur quo nam, iusto quisquam, ducimus esse odit at asperiores nemo illum natus sit. Iusto sint obcaecati dicta, similique repellat facilis minus voluptate quasi dolorum. Accusamus, laboriosam. Totam aliquam recusandae voluptatum praesentium ad quia perspiciatis aspernatur suscipit tenetur dolorum ullam neque incidunt alias quasi repellat, sit reiciendis iusto voluptate dolore dolor, aperiam beatae repudiandae. Vel nisi commodi omnis sed doloribus excepturi similique minus deleniti veritatis blanditiis quisquam numquam iusto ab dignissimos eligendi harum, quam sequi animi. Laudantium suscipit quaerat quis voluptas aspernatur, quam facilis eum sequi ipsa explicabo voluptates nesciunt adipisci eius, consequuntur temporibus id perspiciatis illum a vero ullam.
 
 
 
