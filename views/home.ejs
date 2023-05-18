@@ -16,7 +16,7 @@
         <h2><%= user.blog[i].title %></h2>
         <p class="post-author"><%= user.name %></p>
         <p class="post-content"><%= user.blog[i].content.substring(0, 200) + " ..." %></p>
-        <a href="posts/<%=user.name%>/<%= user.blog[i].title%>" class="btn compose-btn">Read More ></a>
+        <a href="/posts/<%=user.name%>/<%= user.blog[i].title%>" class="btn compose-btn">Read More ></a>
       </div>
 
     <%}%>
@@ -33,7 +33,7 @@
 
     <% for(i=0;i<user.blog.length;i++){%>
 
-      <a href="posts/<%=user.name%>/<%= user.blog[i].title%>" class=" text-dark recent-posts-text"><ul class="mb-3"><li><%= user.blog[i].title %></li></ul></a>
+      <a href="/posts/<%=user.name%>/<%= user.blog[i].title%>" class=" text-dark recent-posts-text"><ul class="mb-3"><li><%= user.blog[i].title %></li></ul></a>
    <%}%>
   <%})%>
 

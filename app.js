@@ -25,7 +25,10 @@ const findOrCreate = require('mongoose-findorcreate');
 
 const ejs = require("ejs");
 app.set('view engine', 'ejs');
-app.use(express.static("public")); 
+const path = require("path")
+app.use(express.static(__dirname + "/public"));
+app.set('views', [path.join(__dirname, 'views'),path.join(__dirname, 'views/partials/')]);
+
 
 //body parser 
 
@@ -207,7 +210,7 @@ app.get('/register',function(req,res){
 
 app.post('/register',function(req,res){
 
-  User.register( {username: req.body.username, name:req.body.firstName + " " + req.body.lastName, first_name: req.body.firstName, google_dp:'images/test.svg'}, req.body.password, function(err, user){
+  User.register( {username: req.body.username, name:req.body.firstName + " " + req.body.lastName, first_name: req.body.firstName, google_dp:'/images/test.svg'}, req.body.password, function(err, user){
   if(err){
     console.log(err);
     res.redirect('/register');
@@ -283,17 +286,21 @@ app.get('/pricing',function(req,res){
 
 //Solo View Route
 
-app.get('/posts/:param/:param2',function(req,res){
+app.get("/posts/:user/:blog",function(req,res){
   
+  //authentication
+
+  if (req.isAuthenticated()){
+    console.log('Article Get Route authenticated');
   
-  //finding user and post
-  
-  const user = req.params.param;
-  const post = _.toUpper(req.params.param2);
-  console.log(user + "/" + post);
-if(post != 'INDEX.JS' && post != 'STYLE.CSS'){
-  User.findOne  ({name: user})
-    .then((foundUser)=>{
+    const user = req.params.user;
+    const post = _.toUpper(req.params.blog);
+    console.log('Requested Path: ' + user + "/" + post);
+    
+      //finding user and post
+
+      User.findOne  ({name: user})
+      .then((foundUser)=>{
       console.log('User found : '+ foundUser.name +' Looking for Posts...')
       if(foundUser){
        for(i=0; i<foundUser.blog.length; i++)
@@ -302,16 +309,59 @@ if(post != 'INDEX.JS' && post != 'STYLE.CSS'){
          if(blogTitle === post)
          {
           console.log('Post Found: ' + blogTitle);
-          res.render('article',{loggedIn:'nope'});
-         }
+
+          //Checking Ownership
+
+
+          let postOwner = false;
+          const owner = JSON.stringify(foundUser._id);
+          const user = JSON.stringify(req.user._id);
+            if(owner === user){postOwner = true; }
+            console.log('Owned Post:' + postOwner);
+          res.render('article',
+          { user:foundUser,
+            blog:foundUser.blog[i],
+            owner:postOwner,
+            loggedIn:'yes',
+            firstName: req.user.first_name,
+            dp: req.user.google_dp}); 
+          }
          else{
-          console.log(blogTitle + " " + post)
+          console.log("Didn't match")
          }
        }
       }
-      console.log('not found')
+      else{
+      console.log('Didn\'t Match');
+      }
     })
     .catch((err=>{console.log(err); res.redirect('home')}))
-}
+  }
+  else{
+    console.log('Article Get Route: Not Authenticated')
+    res.redirect('/login');
+  }
+  
+})
+
+//Delete Route
+
+app.get("/delete/:user/:post",function(req,res){
+ console.log(req.params.user + '/' + req.params.post);
+ const user_id = req.params.user;
+ const post_title = req.params.post;
+
+  User.findOneAndUpdate
+     ({_id:user_id},{$pull:{blog:{title:post_title}}})
+     .then(
+       (doc)=>{
+         console.log("Deleted Items" + blog.title);
+         res.redirect("/home");
+       }
+     )
+     .catch((err)=>{
+       console.log("couldn/'t do it" + err);
+       res.redirect("/home");
+     })
 
 })
