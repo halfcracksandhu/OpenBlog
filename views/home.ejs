@@ -16,7 +16,7 @@
         <h2><%= user.blog[i].title %></h2>
         <p class="post-author"><%= user.name %></p>
         <p class="post-content"><%= user.blog[i].content.substring(0, 200) + " ..." %></p>
-        <a href="/posts/<%=user.name%>/<%=user.blog[i].key %>" class="btn compose-btn">Read More ></a>
+        <a href="/posts/<%=user._id%>/<%=user.blog[i].key %>" class="btn compose-btn">Read More ></a>
       </div>
 
     <%}%>
@@ -42,30 +42,3 @@
 </div>
 
 <%- include('partials/footer') %>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

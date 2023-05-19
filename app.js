@@ -50,12 +50,14 @@ app.use(passport.session());
 
 const PORT  = process.env.PORT || 3000;
 app.listen(PORT,function(){console.log('Started Server')})
+
+
 //db setup
 
 mongoose.connect(process.env.MongoDB_Key)
 
 const userSchema = new mongoose.Schema
-({user: String,
+({username:String,
   password: String,
   googleId: String,
   name:String,
@@ -88,31 +90,21 @@ passport.deserializeUser(async function (id, done) {
 
 
 passport.use(new GoogleStrategy({
-  clientID:     process.env.CLIENT_ID,
+  clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "http://localhost:3000/auth/google/OpenBlog"
-},
-function(accessToken, refreshToken, profile, done) {
-  User.findOrCreate({ googleId: profile.id, name: profile.displayName, first_name: profile.name.givenName ,google_dp: profile.photos[0].value }, function (err, user) {
+  callbackURL: "http://localhost:3000/auth/google/OpenBlog",
+}, (accessToken, refreshToken, profile, done) => {
+  User.findOrCreate({ googleId: profile.id }, { username:profile._json.email, name: profile.displayName, first_name: profile.name.givenName, google_dp: profile.photos[0].value }, (err, user) => {
     return done(err, user);
-    
   });
-}
-));
-
+}));
 
 
 // loading error tip 'don't use empty function,run the authentication directly" 
 
 app.get("/auth/google",
-  passport.authenticate("google", { scope:["profile"] } )
+  passport.authenticate("google", { scope:["profile","email"] } )
 )
-
-// app.get( "/auth/google/OpenBlog",
-//     passport.authenticate( "google", 
-//     { successRedirect: "/home",
-//       failureRedirect: "/login"})
-// );
 
 app.get("/auth/google/OpenBlog",
   passport.authenticate("google", 
@@ -305,7 +297,7 @@ app.get("/posts/:user/:blog",function(req,res){
     
       //finding user and post
 
-      User.findOne  ({name: user})
+      User.findOne  ({_id: user})
       .then((foundUser)=>{
       console.log('User found : '+ foundUser.name +' Looking for Posts...')
       if(foundUser){
@@ -356,8 +348,9 @@ app.get("/delete/:user/:post",function(req,res){
  console.log(req.params.user + '/' + req.params.post);
  const user_id = req.params.user;
  const post_key = req.params.post;
-
-  User.findOneAndUpdate
+  
+  if(user_id === req.user.id){
+   User.findOneAndUpdate
      ({_id:user_id},{$pull:{blog:{key:post_key}}})
      .then(
        (blog)=>{
@@ -367,7 +360,10 @@ app.get("/delete/:user/:post",function(req,res){
      )
      .catch((err)=>{
        console.log("couldn/'t do it" + err);
-       res.redirect("/home");
      })
-
+  }    
+  else
+  {console.log(user_id , req.user.id );
+    res.send("Access Denied");
+  }
 })
