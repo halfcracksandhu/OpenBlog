@@ -33,7 +33,7 @@
 
     <% for(i=0;i<user.blog.length;i++){%>
 
-      <a href="/posts/<%=user.name%>/<%=user.blog[i].key%>" class=" text-dark recent-posts-text"><ul class="mb-3"><li><%= user.blog[i].title %></li></ul></a>
+      <a href="/posts/<%=user._id%>/<%=user.blog[i].key%>" class=" text-dark recent-posts-text"><ul class="mb-3"><li><%= user.blog[i].title %></li></ul></a>
    <%}%>
   <%})%>
 

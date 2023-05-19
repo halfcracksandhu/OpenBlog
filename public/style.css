@@ -1,7 +1,12 @@
 body{
   
-  background-image: url(../images/sketch.jpg);
+    background-image: url(../images/sketch.jpg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  
 }
+
 
 .gradient-background {
   background: linear-gradient(300deg, #7b00ff, rgb(250, 119, 37), #0091ff);
@@ -226,6 +231,7 @@ h2.getStarted-container-text{
 
 
 footer{
+  margin-top:auto;
   background-color: rgb(250, 119, 37);
   width: 100%;
 }
@@ -474,3 +480,34 @@ text-align: center;
   width: 27px;
 }
 
+/* Error 404 Page */
+
+.error-body-container{
+ display:flex;
+ flex-direction: column;
+ align-items: center;
+ justify-items: center;
+ height: 100%;
+ width: 100%;
+}
+
+.error{
+  height: 66vh;
+  width: 80%;
+  background-color: #ffffff;
+  display: inherit;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.error-img{
+  height: 85%;
+  width: 98%;
+}
+
+.error-text{
+  color:rgb(1, 144, 120);
+  font-size: 2rem;
+  font-family: 'Courier New', Courier, monospace;
+}

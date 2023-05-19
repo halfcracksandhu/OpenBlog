@@ -333,7 +333,7 @@ app.get("/posts/:user/:blog",function(req,res){
       console.log('User Not Found');
       }
     })
-    .catch((err=>{console.log(err); res.redirect('home')}))
+    .catch((err=>{console.log(err); res.redirect('/Error-404')}))
   }
   else{
     console.log('Article Get Route: Not Authenticated')
@@ -366,4 +366,21 @@ app.get("/delete/:user/:post",function(req,res){
   {console.log(user_id , req.user.id );
     res.send("Access Denied");
   }
+})
+
+
+app.get("/error_404",function(req,res){
+  if (req.isAuthenticated()){
+    console.log('authenticated');
+    res.render('404',{loggedIn:'yes',firstName: req.user.first_name, dp: req.user.google_dp});
+  }
+  else{
+    console.log('404 Route: Not Authenticated')
+    res.render('404',{loggedIn:'nope'});
+  }
+
+})
+
+app.get("/:page",function(req,res){
+  res.redirect("/error_404");
 })
