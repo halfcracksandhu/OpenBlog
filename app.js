@@ -54,7 +54,20 @@ app.listen(PORT,function(){console.log('Started Server')})
 
 //db setup
 
-mongoose.connect(process.env.MongoDB_Key)
+const dbUri = process.env.NODE_ENV === 'production' ? process.env.LIVE_DB_URI : process.env.LOCAL_DB_URI;
+
+mongoose.connect(dbUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log("Connected to MongoDB Atlas");
+})
+.catch((error) => {
+  console.log("Failed to connect to MongoDB Atlas:", error);
+});
+
+//User Schema
 
 const userSchema = new mongoose.Schema
 ({username:String,
@@ -80,24 +93,41 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(async function (id, done) {
   let err, user;
   try {
-      user = await User.findById(id).exec();
-  }
-  catch (e) {
-      err = e;
+    user = await User.findById(id).exec();
+  } catch (e) {
+    err = e;
   }
   done(err, user);
 });
 
+const callbackUrl = process.env.NODE_ENV === 'production' ? process.env.LIVE_CALLBACK_URL : process.env.LOCAL_CALLBACK_URL;
+
+console.log(callbackUrl);
 
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "http://localhost:3000/auth/google/OpenBlog",
-}, (accessToken, refreshToken, profile, done) => {
-  User.findOrCreate({ googleId: profile.id }, { username:profile._json.email, name: profile.displayName, first_name: profile.name.givenName, google_dp: profile.photos[0].value }, (err, user) => {
-    return done(err, user);
-  });
+  callbackURL: callbackUrl,
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    const user = await User.findOne({ googleId: profile.id });
+    if (user) {
+      return done(null, user);
+    } else {
+      const newUser = await User.create({
+        googleId: profile.id,
+        username: profile._json.email,
+        name: profile.displayName,
+        first_name: profile.name.givenName,
+        google_dp: profile.photos[0].value
+      });
+      return done(null, newUser);
+    }
+  } catch (err) {
+    return done(err, null);
+  }
 }));
+
 
 
 // loading error tip 'don't use empty function,run the authentication directly" 
@@ -129,20 +159,22 @@ app.get('/',function(req,res){
 
 // Home Route
 
-app.get('/home',function(req,res){
-  if (req.isAuthenticated()){
-    console.log('Home Get Route: authenticated  ');
-    
-    User.find({'blog':{$ne:[]} })
-    .then((result)=>{
-     res.render('home',{blogs:result, loggedIn: 'yes',firstName: req.user.first_name, dp: req.user.google_dp}); 
-    })
-    .catch((err)=>{console.log(err)});
-  }
-  else{
+app.get('/home', async function (req, res) {
+  if (req.isAuthenticated()) {
+    console.log('Home Get Route: authenticated');
+    try {
+      const result = await User.find({ 'blog': { $ne: [] } });
+      res.render('home', { blogs: result, loggedIn: 'yes', firstName: req.user.first_name, dp: req.user.google_dp });
+    } catch (err) {
+      console.log(err);
+      res.redirect('/');
+    }
+  } else {
     console.log('Home Get Route: Not authenticated');
-    res.redirect("/");}
-})
+    res.redirect("/");
+  }
+});
+
 
 //Login Routes
 
@@ -235,22 +267,26 @@ app.get('/compose',function(req,res){
   
 })
 
-app.post('/compose',function(req,res){
+app.post('/compose', async function(req, res) {
   const newPost = {
     key: _.kebabCase(req.body.title),
     title: _.trim(req.body.title),
     content: req.body.content
+  };
+
+  try {
+    const user = await User.findById(req.user._id);
+    if (user) {
+      user.blog.push(newPost);
+      await user.save();
+    }
+  } catch (err) {
+    console.log(err);
   }
 
-  User.findById(req.user._id)
-  .then((result)=>{
-    result.blog.push(newPost);
-    result.save();
-  })
-  .catch((err)=>{console.log(err)})
-    
-res.redirect('/home');
-})
+  res.redirect('/home');
+});
+
 
 
 //about Us Route
@@ -283,90 +319,91 @@ app.get('/pricing',function(req,res){
 
 //Solo View Route
 
-app.get("/posts/:user/:blog",function(req,res){
-  
-  //authentication
-
-  if (req.isAuthenticated()){
-   
+app.get("/posts/:user/:blog", async function(req, res) {
+  if (req.isAuthenticated()) {
     console.log('Article Get Route authenticated');
-   
+
     const user = req.params.user;
     const post = req.params.blog;
     console.log('Requested Path: ' + user + "/" + post);
-    
-      //finding user and post
 
-      User.findOne  ({_id: user})
-      .then((foundUser)=>{
-      console.log('User found : '+ foundUser.name +' Looking for Posts...')
-      if(foundUser){
-       for(i=0; i<foundUser.blog.length; i++)
-       {  
-        const blogTitle = foundUser.blog[i].key;
-         if(blogTitle === post)
-         {
-          console.log('Post Found: ' + blogTitle);
+    try {
+      const foundUser = await User.findOne({ _id: user });
+      console.log('User found: ' + foundUser?.name + ' Looking for Posts...');
 
-          //Checking Ownership
+      if (foundUser) {
+        let foundBlog = null;
+        for (const blog of foundUser.blog) {
+          if (blog.key === post) {
+            foundBlog = blog;
+            break;
+          }
+        }
 
+        if (foundBlog) {
+          console.log('Post Found: ' + foundBlog.key);
 
           let postOwner = false;
           const owner = JSON.stringify(foundUser._id);
-          const user = JSON.stringify(req.user._id);
-            if(owner === user){postOwner = true; }
-            console.log('Owned Post:' + postOwner);
-          res.render('article',
-          { user:foundUser,
-            blog:foundUser.blog[i],
-            owner:postOwner,
-            loggedIn:'yes',
-            firstName: req.user.first_name,
-            dp: req.user.google_dp}); 
+          const currentUser = JSON.stringify(req.user._id);
+          if (owner === currentUser) {
+            postOwner = true;
           }
-         else{
-          console.log("Didn't match" + "\n"+ blogTitle + "\n" + post);
-         }
-       }
+          console.log('Owned Post: ' + postOwner);
+
+          res.render('article', {
+            user: foundUser,
+            blog: foundBlog,
+            owner: postOwner,
+            loggedIn: 'yes',
+            firstName: req.user.first_name,
+            dp: req.user.google_dp
+          });
+        } else {
+          console.log("Blog not found: " + post);
+          res.redirect('/error-404');
+        }
+      } else {
+        console.log('User Not Found');
+        res.redirect('/error-404');
       }
-      else{
-      console.log('User Not Found');
-      }
-    })
-    .catch((err=>{console.log(err); res.redirect('/Error-404')}))
-  }
-  else{
-    console.log('Article Get Route: Not Authenticated')
+    } catch (err) {
+      console.log("Syntax Error" + err);
+      res.redirect('/error-404');
+    }
+  } else {
+    console.log('Article Get Route: Not Authenticated');
     res.redirect('/login');
   }
-  
-})
+});
+
+
 
 //Delete Route
 
-app.get("/delete/:user/:post",function(req,res){
- console.log(req.params.user + '/' + req.params.post);
- const user_id = req.params.user;
- const post_key = req.params.post;
-  
-  if(user_id === req.user.id){
-   User.findOneAndUpdate
-     ({_id:user_id},{$pull:{blog:{key:post_key}}})
-     .then(
-       (blog)=>{
-         console.log("Deleted Items" + blog.key);
-         res.redirect("/home");
-       }
-     )
-     .catch((err)=>{
-       console.log("couldn/'t do it" + err);
-     })
-  }    
-  else
-  {console.log(user_id , req.user.id );
+app.get("/delete/:user/:post", function(req, res) {
+  console.log(req.params.user + '/' + req.params.post);
+  const user_id = req.params.user;
+  const post_key = req.params.post;
+
+  if (user_id === req.user.id) {
+    User.findOneAndUpdate(
+      { _id: user_id },
+      { $pull: { blog: { key: post_key } } }
+    )
+      .then(() => {
+        console.log("Deleted Post: " + post_key);
+        res.redirect("/home");
+      })
+      .catch((err) => {
+        console.log("Couldn't delete post: " + err);
+      });
+  } else {
+    console.log(user_id, req.user.id);
     res.send("Access Denied");
   }
-})
+});
+
 
 
 app.get("/error_404",function(req,res){
