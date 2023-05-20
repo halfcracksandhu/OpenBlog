@@ -67,7 +67,7 @@ app.listen(PORT,function(){console.log('Started Server')})
 })
 
 .catch((error) => {
-  console.log("Failed to connect to MongoDB Atlas:", error);
+  console.log("Failed to connect to MongoDB Atlas:",dbUri , error);
 });
 
 //User Schema
