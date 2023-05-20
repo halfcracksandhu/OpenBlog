@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+
+
+<!-- Posts  -->
+
+<div class="homepage-body">
+  
+  <div class="rounded posts-container border">
+  <a href="compose" class="btn compose-btn">+Add</a>
+  
+  <%blogs.forEach(function(user){%>
+  
+    <% for(i=0;i<user.blog.length;i++){ %>
+
+       <div class="rounded post-container border">
+        <h2><%= user.blog[i].title %></h2>
+        <p class="post-author"><%= user.name %></p>
+        <p class="post-content"><%= user.blog[i].content.substring(0, 200) + " ..." %></p>
+        <a href="/posts/<%=user._id%>/<%=user.blog[i].key %>" class="btn compose-btn">Read More ></a>
+      </div>
+
+    <%}%>
+  <%})%>
+
+</div>
+
+ <div class="rounded recent-posts-container p-3">
+   
+  
+   <h4>Recent Posts</h4>
+  <hr class="hr border-dark-subtle">
+  <%blogs.forEach(function(user){%>
+
+    <% for(i=0;i<user.blog.length;i++){%>
+
+      <a href="/posts/<%=user._id%>/<%=user.blog[i].key%>" class=" text-dark recent-posts-text"><ul class="mb-3"><li><%= user.blog[i].title %></li></ul></a>
+   <%}%>
+  <%})%>
+
+ </div>
+
+</div>
+
+<%- include('partials/footer') %>

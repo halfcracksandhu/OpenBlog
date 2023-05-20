@@ -1,0 +1,57 @@
+<%- include('partials/header') %>
+
+<section class="vh-80 signup-page">
+  <div class="container py-5 h-100">
+    <div class="row d-flex align-items-center justify-content-center h-100">
+      <div class="col-md-8 col-lg-7 col-xl-6">
+        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
+          class="img-fluid" alt="Phone image">
+      </div>
+      <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1 main-form ">
+        <form action="/login" method="post">
+          <!-- Email input -->
+          <div class="form-outline mb-4">
+            <input required autocomplete="off" onkeydown="return event.key != 'Enter';" name="username" type="email" id="form1Example13" class="form-control form-control-lg" onclick="console.warn();" />
+            <label class="form-label" for="form1Example13">Email address</label>
+          </div>
+
+          <!-- Password input -->
+          <div class="form-outline mb-4">
+            <input required name="password" type="password" id="form1Example23" class="form-control form-control-lg" />
+            <label class="form-label" for="form1Example23">Password</label>
+          </div>
+
+          <div class="d-flex justify-content-around align-items-center mb-4">
+            <!-- Checkbox -->
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="form1Example3" checked />
+              <label class="form-check-label" for="form1Example3"> Remember me </label>
+            </div>
+            <a href="register">Not A Member Yet?</a>
+          </div>
+
+          <!-- Submit button -->
+          
+          <div class="container-fluid text-center">
+            <button type="submit" class="btn signup-btn btn-lg btn-block">Sign in</button>
+          </div>
+          <div class="divider d-flex align-items-center my-4">
+            <p class="text-center fw-bold mx-3 mb-0 text-muted">OR</p>
+          </div>
+       
+            <a href="/auth/google" class="google-btn btn btn-light ms-5">
+              <div class="google-icon-wrapper">
+                <img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+              </div>
+              <p class="btn-text">Sign in with google</p>
+            </a>
+          
+
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<%- include('partials/footer') %>

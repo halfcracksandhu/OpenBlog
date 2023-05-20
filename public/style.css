@@ -1,0 +1,513 @@
+body{
+  
+    background-image: url(../images/sketch.jpg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  
+}
+
+
+.gradient-background {
+  background: linear-gradient(300deg, #7b00ff, rgb(250, 119, 37), #0091ff);
+  background-size: 180% 180%;
+  animation: gradient-animation 18s ease infinite;
+}
+
+.gradient-background2 {
+  background: linear-gradient(300deg, #ff0000, rgb(116, 0, 165), #ff6a00);
+  background-size: 180% 180%;
+  animation: gradient-animation 18s ease infinite;
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+/* navbar */
+
+.header-container{
+  background-color: rgb(250, 119, 37);
+}
+
+.logo{
+  margin-right:100px;
+  height:50px;
+  width:150px;
+}
+
+.header-container-text{
+  color:rgb(255, 255, 255);
+}
+
+.header-logout-container{
+  color:white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 30px;
+}
+
+.user_profile_dp{
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+
+/* Index Page */
+
+
+.homepage-body-container{
+  height:100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+/* Welocome */
+
+.welcome-container{
+  
+  color:white;
+}
+
+h1{
+  font-size: 4rem;
+  margin-bottom:20px ;
+}
+
+
+/* people1 */
+
+.people1-container{
+  
+  background-color: azure;
+  height:500px;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  border-radius: 5%;
+}
+
+.img1{
+  height: 400px;
+  width:auto;
+  border-radius: 5%;
+  margin-right: 100px;
+}
+
+.people1-container div{
+  height: 400px;
+  width:40%;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  border-radius: 5%;
+}
+
+.people1-container div h2{
+  font-size: 2.6rem;
+}
+
+.people1-container div p{
+ 
+  margin-top: 30px;
+  font-size: 1.1rem;
+}
+
+/* people 2 */
+
+.people2-container{
+  
+  background-color: azure;
+  height:max-content;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.img2{
+  margin-top: 10px;
+  height: 400px;
+  width: 650px;
+  border-radius: 5%;
+}
+
+.people2-container div{
+  height: max-content;
+  width:100%;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+}
+
+.people2-container div h2{
+  
+  margin-top: 30px;
+  font-size: 2.6rem;
+}
+
+.people2-container div p{
+ margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+/* people3 */
+
+.people3-container{
+  
+  background-color: azure;
+  height:600px;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  border-radius: 5%;
+}
+
+.img3{
+  height: 500px;
+  width:400px;
+  border-radius: 5%;
+  margin-left: 100px;
+}
+
+.people3-container div{
+  height: 400px;
+  width:40%;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  border-radius: 5%;
+}
+
+.people3-container div h2{
+  font-size: 2.6rem;
+}
+
+.people3-container div p{
+ 
+  margin-top: 30px;
+  font-size: 1.1rem;
+}
+
+
+/* Finishing Line */
+
+
+
+
+.getStarted-container-text{
+  color:white;
+  font-size: 3.5rem;
+}
+
+h2.getStarted-container-text{
+  margin-bottom: 50px;
+}
+
+
+footer{
+  margin-top:auto;
+  background-color: rgb(250, 119, 37);
+  width: 100%;
+}
+
+.social-icon{
+  height:30px;
+  width:33px;
+}
+
+/* HomePage */
+
+.homepage-body{
+  display:flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  justify-content:center;
+}
+
+
+.posts-container{
+  margin: 20px 20px 20px 0;
+  padding: 20px;
+  height:max-content;
+  width:70%;
+  background-color: #fff7f7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.compose-btn{
+background-color: #ff6a00;
+color: #fbf5f5;
+align-self:flex-start ;
+}
+
+.post-container{
+height: max-content;
+width: 100%;
+margin-top: 30px;
+background-color: #ffeeee;
+padding: 12px;
+text-align: left;
+}
+
+.solo-post h2{
+  font-size: 30px;
+}
+
+.post-author{
+  font-size: 15px;
+}
+.post-content{
+  font-size: 17px;
+}
+
+.recent-posts-container{
+  margin-top: 20px;
+  height: max-content;
+  width:20%;
+  background-color: #fff5f5;
+
+}
+
+.recent-posts-text{
+  text-decoration: none;
+}
+
+
+/* Login Page */
+
+.divider:after,
+.divider:before {
+content: "";
+flex: 1;
+height: 1px;
+background: #eee;
+}
+
+.signup-page{
+  background-color: rgb(252, 233, 233);
+}
+
+/* google signin button */
+.google-btn{
+  width: 350px;
+  height: 65px;
+}
+.google-icon{
+  height: 45px;
+  width: 45px;
+  margin-right: 15px;
+}
+
+.google-btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-text{
+  margin-top: 9px;
+  font-size: 1.5rem;
+}
+
+/* Register Page */
+
+.signup-btn{
+  background-color: #ff6a00;
+  color:white;
+}
+
+/* Compose Page */
+
+.compose-container{
+  margin: 10px 0px 10px 10%;
+  height: max-content;
+  width: 80%;
+  display:flex;
+  flex-direction: column;
+  background-color: #fbf5f5;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5%;
+  color: #ff6a00;
+}
+
+.publish-btn{
+  background-color: #ff6a00;
+  color: aliceblue;
+}
+
+/* About Us Page */
+
+.about-body{
+  display: flex;
+  justify-content: center;
+}
+.about-container{
+  height: max-content;
+  width: 80%;
+  background-color: #fffaf4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.about-us-logo-container{
+  background-color: #ff6a00;
+  width: max-content;
+  height: max-content;
+}
+.about-us-logo{
+  height: 70px;
+  width:200px;
+}
+
+.hr-warning{
+  background-image: -webkit-linear-gradient(left, rgba(3, 0, 182, 0.36), rgb(255, 94, 0), rgba(25, 2, 201, 0.504));
+}
+
+.about-container h2{
+  color: rgb(255, 140, 0);
+  font-size: 40px;
+}
+
+/* Pricing Page */
+
+.pricing-body{
+  display: flex;
+  justify-content: center;
+}
+
+.pricing-container{
+  width: 80%;
+  background-color: #fffaf4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pricing-color-scheme{
+  background-color: #ff6a00;
+  color:white;
+}
+
+
+/* Article Page */
+
+.blogpage-body{
+  display:flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+
+
+.blog-container{
+  margin: 20px 20px 20px 0;
+  padding: 20px;
+  height:max-content;
+  width:80%;
+  background-color: #fff7f7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.blog-body-container{
+height: max-content;
+width: 100%;
+margin-top: 15px;
+background-color: #ffeeee;
+padding: 12px;
+text-align: center;
+}
+
+.blog-body-container > h2{
+  font-size: 2.5rem;
+}
+
+
+.blog-author{
+  font-size: 15px;
+}
+.blog-content{
+  font-size: 17px;
+}
+
+.deletePost-btn{
+  width: 130px;
+  height: 40px;
+  display: inline-block;
+  margin-left: 85%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.deletePost-icon{
+  height: 29px;
+  width: 27px;
+}
+
+/* Error 404 Page */
+
+.error-body-container{
+ display:flex;
+ flex-direction: column;
+ align-items: center;
+ justify-items: center;
+ height: 100%;
+ width: 100%;
+}
+
+.error{
+  height: 66vh;
+  width: 80%;
+  background-color: #ffffff;
+  display: inherit;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.error-img{
+  height: 85%;
+  width: 98%;
+}
+
+.error-text{
+  color:rgb(1, 144, 120);
+  font-size: 2rem;
+  font-family: 'Courier New', Courier, monospace;
+}

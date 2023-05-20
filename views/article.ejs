@@ -1,0 +1,21 @@
+<%- include('partials/header') %>
+
+<div class="blogpage-body">
+  
+  <div class="rounded blog-container border">
+       <%if(owner){%>
+       <a href="/delete/<%=user._id%>/<%=blog.key%>" class="btn btn-danger deletePost-btn  p-1" ><img class="deletePost-icon me-1 p-0" src="/images/bin.png"> Delete Post</a>
+       <%}%>
+       <div class="rounded blog-body-container border">
+        <h2><%= blog.title %></h2>
+        <p class="blog-author">by <%= user.name %></p>
+        <p class="post-content"><%= blog.content%></p>
+      </div>
+
+
+  </div>
+
+</div>
+
+
+<%- include('partials/footer') %>
