@@ -46,11 +46,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-//Port Setup
-
-const PORT  = process.env.PORT || 3000;
-app.listen(PORT,function(){console.log('Started Server')})
-
 
 //db setup
 
@@ -62,7 +57,15 @@ mongoose.connect(dbUri, {
 })
 .then(() => {
   console.log("Connected to MongoDB Atlas");
+
+  
+//Port Setup
+
+const PORT  = process.env.PORT || 3000;
+app.listen(PORT,function(){console.log('Started Server')})
+
 })
+
 .catch((error) => {
   console.log("Failed to connect to MongoDB Atlas:", error);
 });
